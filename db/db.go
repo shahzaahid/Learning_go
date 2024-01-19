@@ -3,6 +3,7 @@ package db
 import (
 	"database/sql"
 	"fmt"
+	"log"
 
 	_ "github.com/lib/pq"
 )
@@ -26,7 +27,27 @@ func InitDB() {
 	var err error
 	DB, err = sql.Open("postgres", connStr)
 	if err != nil {
-		panic(fmt.Errorf("error connecting to the database: %v", err))
+		log.Fatal(fmt.Errorf("error connecting to the database: %v", err))
 	}
 
+	createTable()
+
+	defer DB.Close()
+}
+
+func createTable() {
+	createEventTable := `
+	CREATE TABLE IF NOT EXISTS events (
+		id SERIAL PRIMARY KEY,
+		name TEXT NOT NULL, 
+		description TEXT NOT NULL, 
+		dateTime TIMESTAMP NOT NULL, 
+		user_id INTEGER
+	);
+`
+
+	_, err := DB.Exec(createEventTable)
+	if err != nil {
+		log.Fatal(fmt.Errorf("could not create table: %v", err))
+	}
 }

@@ -3,11 +3,14 @@ package main
 import (
 	"net/http"
 
+	"example.com/test/db"
 	"example.com/test/models"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
+
+	db.InitDB()
 
 	//? Initialize the server
 	server := gin.Default()
