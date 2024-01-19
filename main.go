@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 
+	"example.com/test/models"
 	"github.com/gin-gonic/gin"
 )
 
@@ -13,16 +14,27 @@ func main() {
 
 	//?Define the routes
 	server.GET("/events", getEvents)
-	server.GET("/joy", getJoy)
+	server.POST("/events", createEvent)
 
 	//? Run the server
 	server.Run(":8080")
 }
 
+// ? this function is used to get the event
 func getEvents(context *gin.Context) {
-	context.JSON(http.StatusOK, gin.H{"message": "this is the response from the getEvents"})
+	events := models.GetAllEvents()
+	context.JSON(http.StatusOK, events)
 }
 
-func getJoy(context *gin.Context) {
-	context.JSON(http.StatusOK, gin.H{"message": "This is the respokse from the get joy function "})
+// ? this function is used to recive the add and create the event
+func createEvent(context *gin.Context) {
+	var event models.Event
+	err := context.ShouldBindJSON(&event)
+
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse the data"})
+		return
+	}
+	models.UserId = 1
+	models.ID = 1
 }
