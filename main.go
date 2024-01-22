@@ -3,6 +3,8 @@ package main
 import (
 	"net/http"
 
+	"fmt"
+
 	"example.com/test/db"
 	"example.com/test/models"
 	"github.com/gin-gonic/gin"
@@ -46,7 +48,10 @@ func createEvent(context *gin.Context) {
 	event.UserId = 1
 	event.ID = 1
 
-	event.Save()
+	err = event.Save()
+	if err != nil {
+		fmt.Println("There is the problem", err)
+	}
 	//? I am return what I have save
 	context.JSON(http.StatusCreated, gin.H{"this is the data of event that you have saved": event})
 }

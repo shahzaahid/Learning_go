@@ -32,7 +32,7 @@ func InitDB() {
 
 	createTable()
 
-	defer DB.Close()
+	// defer DB.Close()
 }
 
 func createTable() {
