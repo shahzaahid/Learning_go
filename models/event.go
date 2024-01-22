@@ -44,21 +44,39 @@ func (e Event) Save() error {
 
 }
 
-// ? this function is used to return all the events
-// func GetEventByName(name string) (Event, error) {
-// 	query := "SELECT * FROM events WHERE name = $1 LIMIT 1"
-// 	row := db.DB.QueryRow(query, name)
+func GetAllEvents() ([]Event, error) {
+	query := "SELECT * FROM events"
+	rows, err := db.DB.Query(query)
+	if err != nil {
+		return nil, err
+	}
 
-// 	var event Event
-// 	err := row.Scan(&event.Name, &event.Description, &event.DateTime, &event.UserId)
+	defer rows.Close()
+	var events []Event
 
-// 	if err != nil {
-// 		return Event{}, err
-// 	}
+	for rows.Next() {
+		var event Event
+		err := rows.Scan(&event.ID, &event.Name, &event.Description, &event.DateTime, &event.UserId)
+		if err != nil {
+			return nil, err
+		}
 
-// 	return event, nil
-// }
+		events = append(events, event)
+	}
 
-func GetAllEvents() []Event {
-	return events
+	return events, nil
+}
+
+func GetEventById(id int64) (*Event, error) {
+	query := "SELECT * FROM events WHERE ID = $1"
+
+	row := db.DB.QueryRow(query, id)
+
+	var event Event
+
+	err := row.Scan(&event.ID, &event.Name, &event.Description, &event.DateTime, &event.UserId)
+	if err != nil {
+		return nil, err
+	}
+	return &event, err
 }

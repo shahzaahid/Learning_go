@@ -2,8 +2,7 @@ package main
 
 import (
 	"net/http"
-
-	"fmt"
+	"strconv"
 
 	"example.com/test/db"
 	"example.com/test/models"
@@ -19,6 +18,7 @@ func main() {
 
 	//?Define the routes
 	server.GET("/events", getEvents)
+	server.GET("/events/:id", getOneEvent)
 	server.POST("/events", createEvent)
 
 	//? Run the server
@@ -27,8 +27,28 @@ func main() {
 
 // ? this function is used to get the event
 func getEvents(context *gin.Context) {
-	events := models.GetAllEvents()
+	events, err := models.GetAllEvents()
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"message": "could not fetch events. Try again later."})
+		return
+	}
 	context.JSON(http.StatusOK, events)
+}
+
+func getOneEvent(context *gin.Context) {
+	eventId, err := strconv.ParseInt(context.Param("id"), 10, 64)
+
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"message": "could not convert into the int"})
+		return
+	}
+	event, err := models.GetEventById(eventId)
+
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not fetch event"})
+		return
+	}
+	context.JSON(http.StatusOK, event)
 }
 
 // ? this function is used to recive the add and create the event
@@ -50,7 +70,8 @@ func createEvent(context *gin.Context) {
 
 	err = event.Save()
 	if err != nil {
-		fmt.Println("There is the problem", err)
+		context.JSON(http.StatusBadRequest, gin.H{"message": "Could not create event try again later"})
+		return
 	}
 	//? I am return what I have save
 	context.JSON(http.StatusCreated, gin.H{"this is the data of event that you have saved": event})
