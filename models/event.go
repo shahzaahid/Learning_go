@@ -99,3 +99,21 @@ func (event Event) Update() error {
 	}
 	return nil
 }
+
+func (event Event) DeleteEventById() error {
+	query := `DELETE FROM events WHERE ID = $1`
+
+	stmt, err := db.DB.Prepare(query)
+
+	if err != nil {
+		return err
+	}
+
+	defer stmt.Close()
+
+	_, err = stmt.Exec(event.ID)
+	return err
+
+	//he return err statement will execute regardless of whether there is an error or not. If there is no error (err is nil), the function will return nil. If there is an error, it will be returned from the function.
+
+}
