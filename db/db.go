@@ -30,9 +30,24 @@ func InitDB() {
 		log.Fatal(fmt.Errorf("error connecting to the database: %v", err))
 	}
 
+	createTables()
 	createTable()
 
 	// defer DB.Close()
+}
+func createTables() {
+	createUsersTable := `
+	CREATE TABLE IF NOT EXISTS users (
+		id SERIAL PRIMARY KEY,
+		email TEXT NOT NULL UNIQUE,
+		password TEXT NOT NULL
+	);
+	`
+	_, err := DB.Exec(createUsersTable)
+
+	if err != nil {
+		panic("could not create users table.")
+	}
 }
 
 func createTable() {
@@ -42,9 +57,10 @@ func createTable() {
 		name TEXT NOT NULL, 
 		description TEXT NOT NULL, 
 		dateTime TIMESTAMP NOT NULL, 
-		user_id INTEGER
+		user_id INTEGER,
+		FOREIGN KEY(user_id) REFERENCES users(id)
 	);
-`
+	`
 
 	_, err := DB.Exec(createEventTable)
 	if err != nil {
