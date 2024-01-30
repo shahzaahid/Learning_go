@@ -4,6 +4,7 @@
 package routes
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -39,12 +40,6 @@ func getOneEvent(context *gin.Context) {
 // ? this function is used to recive the add and create the event
 func createEvent(context *gin.Context) {
 
-	// token := context.Request.Header.Get("Authorization")
-
-	// if token == "" {
-	// 	context.JSON(http.StatusUnauthorized, gin.H{"message": "Not authorized"})
-	// 	return
-	// }
 	var event models.Event
 
 	//? this is going to fetch the data from the incomming request and put it into the variable of event
@@ -62,6 +57,7 @@ func createEvent(context *gin.Context) {
 
 	err = event.Save()
 	if err != nil {
+		fmt.Println("coult not create event try again later", err)
 		context.JSON(http.StatusBadRequest, gin.H{"message": "Could not create event try again later"})
 		return
 	}

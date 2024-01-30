@@ -17,31 +17,30 @@ type Event struct {
 }
 
 // ? Made the variable called events it is the type of Event
-var events = []Event{}
+// var events = []Event{}
 
 func (e Event) Save() error {
 	query := `INSERT INTO events (name, description, dateTime, user_id)
-	VALUES($1, $2, $3, $4)`
+    VALUES($1, $2, $3, $4)`
 
 	stmt, err := db.DB.Prepare(query)
-	// events = append(events, e)
 	if err != nil {
-
 		return err
 	}
 	defer stmt.Close()
+
 	result, err := stmt.Exec(e.Name, e.Description, e.DateTime, e.UserId)
 	if err != nil {
-
 		return err
 	}
+
 	id, err := result.LastInsertId()
 	if err != nil {
 		return err
 	}
-	e.ID = id
-	return err
 
+	e.ID = id
+	return nil
 }
 
 func GetAllEvents() ([]Event, error) {
